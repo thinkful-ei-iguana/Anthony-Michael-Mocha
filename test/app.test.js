@@ -34,7 +34,7 @@ describe('App', () => {
     });
 
     // Filter by Genre
-    it('SHould return an array containing all apps matching valid genre', () => {
+    it('Should return an array containing all apps matching valid genre', () => {
       return supertest(app)
         .get('/apps')
         .query({ genres: 'action' })
@@ -45,23 +45,38 @@ describe('App', () => {
     });
 
     // Sort by App name
-    const validSortValues = ['App', 'Rating'];
-    validSortValues.forEach(sortValue => {
-      it('Sorts by App name', () => {
-        return supertest(app)
-          .get('/apps')
-          .query({ sort: `${sortValue.toLowerCase()}` })
-          .expect(200)
-          .then(res => {
-            let i = 0;
-            let sorted = true;
-            while (sorted && i < res.body.length - 1) {
-              sorted =
-                sorted && res.body[i].sortValue < res.body[i + 1].sortValue;
-            }
-            expect(sorted).to.be.true;
-          });
-      });
+    
+    it('Sorts by App name', () => {
+      return supertest(app)
+        .get('/apps')
+        .query({ sort: 'app' })
+        .expect(200)
+        .then(res => {
+          let i = 0, sorted = true;
+          while (sorted && i < res.body.length - 1) {
+            sorted =
+                sorted && res.body[i].App < res.body[i + 1].App;
+            i = i + 1;
+          }
+          expect(sorted).to.be.true;
+        });
     });
+
+    it('Should sort by Rating', () => {
+      return supertest(app)
+        .get('/apps')
+        .query({ sort: 'rating' })
+        .expect(200)
+        .then(res => {
+          let i = 0, sorted = true;
+          while (sorted && i < res.body.length - 1) {
+            sorted =
+                sorted && res.body[i].Rating >= res.body[i + 1].Rating;
+            i = i + 1;
+          }
+          expect(sorted).to.be.true;
+        });
+    });
+      
   });
 });
